@@ -49,7 +49,6 @@ io.on('connection',socket=>{
                 const registered = await registeruser.save();
             }catch(e){
                 console.log(e);
-                res.status(400).send(e);
             }
             io.to(user.room).emit('roomUsers',{
                 room: user.room,
@@ -68,13 +67,13 @@ io.on('connection',socket=>{
      // taking the chatmessage on server side
 
      socket.on('chatMessage',async(msg)=>{
-        const user = await User.findOne({socketid:socket.id});
-        if(user)
-          io.to(user.room).emit('message',formatMessage(user.username,msg));
+        const socketid = String(socket.id);
+        const user = await User.findOne({socketid:socketid});
+        io.to(user.room).emit('message',formatMessage(user.username,msg));
     })
 
     //on client disconnection
-    
+
     socket.on('disconnect',async()=>{
         const socketid = String(socket.id);
         const user = await User.findOne({socketid:socketid});
