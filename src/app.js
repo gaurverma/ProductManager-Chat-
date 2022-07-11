@@ -22,32 +22,44 @@ const partials_path = path.join(__dirname,"../templates/partials");
 const botName = 'Mobzway RoomChat bot';
 
 io.on('connection',socket=>{
-    socket.on('joinRoom',async({username,room})=>{
-        const user = userJoin(socket.id, username, room);
-        socket.join(user.room);
-
-        //Welcoming message
-        socket.emit('message',formatMessage(botName,`Hello ${user.username}! Welcome to RoomChat`));
-
-        //broadcasting to other users that a new user has connected
-        socket.broadcast.to(user.room).emit('message',formatMessage(botName,`User: ${user.username} has joined the Room: ${user.room}`));
-
-        //const user = userJoin(socket.id, username, room);
-        try{
-            const socketid = socket.id;
-            const registeruser =  new User({
-                socketid,username,room
-            })
-            const registered = await registeruser.save();
-        }catch(e){
-            console.log(e);
-            res.status(400).send(e);
+    socket.on('joinRoom',async({username,room,email,password})=>{
+       //Authentication
+       try{
+        console.log(email + " " + password);
+        const user = await Register.findOne({email:email});
+        if(user.passwrd == password){
+            const user = userJoin(socket.id, username, room);
+            socket.join(user.room);
+    
+            //Welcoming message
+            socket.emit('message',formatMessage(botName,`Hello ${user.username}! Welcome to RoomChat`));
+    
+            //broadcasting to other users that a new user has connected
+            socket.broadcast.to(user.room).emit('message',formatMessage(botName,`User: ${user.username} has joined the Room: ${user.room}`));
+    
+            //const user = userJoin(socket.id, username, room);
+            try{
+                const socketid = socket.id;
+                const registeruser =  new User({
+                    socketid,username,room,email
+                })
+                const registered = await registeruser.save();
+            }catch(e){
+                console.log(e);
+                res.status(400).send(e);
+            }
+    
+            io.to(user.room).emit('roomUsers',{
+                room: user.room,
+                users: await User.find({room:user.room})
+            });
+        }else{
+            socket.emit("Invalidmailpass");
         }
-
-        io.to(user.room).emit('roomUsers',{
-            room: user.room,
-            users: await User.find({room:user.room})
-        });
+    }catch(e){
+        console.log(e);
+    }
+        
 
     });
 
@@ -120,7 +132,7 @@ app.post("/register",async(req,res)=>{
         })
 
         const registered = await registeremployee.save();
-        res.render("login")
+        res.sendFile(path.join(static_path,'index.html'));
 
     }catch(e){
         console.log(e);

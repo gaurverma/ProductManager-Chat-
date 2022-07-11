@@ -4,7 +4,7 @@ const roomName = document.getElementById('room-name');
 const userList = document.getElementById('users');
 
 
-const { username, room } = Qs.parse(location.search, {
+const { username, room,email,password } = Qs.parse(location.search, {
   ignoreQueryPrefix: true,
 });
 
@@ -12,7 +12,7 @@ const { username, room } = Qs.parse(location.search, {
 const socket = io();
 
 // Join chatroom
-socket.emit('joinRoom', { username, room });
+socket.emit('joinRoom', { username,room,email,password });
 
 // Get room and users
 socket.on('roomUsers', ({ room, users }) => {
@@ -20,9 +20,12 @@ socket.on('roomUsers', ({ room, users }) => {
   outputUsers(users);
 });
 
+socket.on('Invalidmailpass',()=>{
+  alert("Please Enter a valid email or password");
+})
+
 // Message from server
 socket.on('message', (message) => {
-  //console.log(message);
   outputMessage(message);
 
   // Scroll down
@@ -54,15 +57,6 @@ function outputMessage(message) {
   div.innerHTML = `<p class="meta"> ${message.username} <span> ${message.time}</span></p>
   <p class = "text">
   ${message.text}</p>`;
-  // const p = document.createElement('p');
-  // p.classList.add('meta');
-  // p.innerText = message.username;
-  // p.innerHTML += `<span>${message.time}</span>`;
-  // div.appendChild(p);
-  // const para = document.createElement('p');
-  // para.classList.add('text');
-  // para.innerText = message.text;
-  // div.appendChild(para);
   document.querySelector('.chat-messages').appendChild(div);
 }
 

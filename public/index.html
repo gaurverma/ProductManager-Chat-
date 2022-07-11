@@ -17,19 +17,21 @@
 	<body>
 		<div class="join-container">
 			<header class="join-header">
-				<h1><i class="fa-solid fa-headset"></i>Project Manager</h1>
+				<h1><i class="fa-solid fa-headset"></i>      Project Manager</h1>
 			</header>
 			<main class="join-main">
 				<form>
 					<div class="form-control">
-						<label for="username">Username</label>
-						<input
-							type="text"
-							name="username"
-							id="username"
-							placeholder="Enter username..."
-							required
-						/>
+						<label for="email">Email</label>
+						<input type="email" name="email" id="email" placeholder="Enter Registered mailid..." required/>
+				    </div>
+					<div class="form-control">
+						<label for="password">Password</label>
+						<input type="password" name="password" id="password" placeholder="Enter Password..." required/>
+					</div>
+					<div class="form-control">
+						<label for="username">Username for joining the chat</label>
+						<input type="text" name="username" id="username" placeholder="Enter username..." required/>
 					</div>
 					<div class="form-control">
 						<label for="room">Room</label>
@@ -43,7 +45,7 @@
 						</select>
 					</div>
 					<button type="submit" id = "adduser" formaction  = "/user" formmethod = "POST" class ="btn">Add User</button>
-					<button type="submit" id = "joinuser" style = "background:grey" disabled formaction  = "chat.html" class ="btn">Join Chat</button>
+					<button type="submit" id = "joinuser" style = "background:grey" disabled formaction  = "chat.html" class ="btn">Join Room</button>
 				</form>
 			</main>
 		</div>
