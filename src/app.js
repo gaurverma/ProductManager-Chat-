@@ -23,7 +23,9 @@ const botName = 'Mobzway RoomChat bot';
 
 io.on('connection',socket=>{
     socket.on('joinRoom',async({username,room,email,password})=>{
+
        //Authentication
+
        try{
         console.log(email + " " + password);
         const user = await Register.findOne({email:email});
@@ -32,12 +34,13 @@ io.on('connection',socket=>{
             socket.join(user.room);
     
             //Welcoming message
+
             socket.emit('message',formatMessage(botName,`Hello ${user.username}! Welcome to RoomChat`));
     
             //broadcasting to other users that a new user has connected
+
             socket.broadcast.to(user.room).emit('message',formatMessage(botName,`User: ${user.username} has joined the Room: ${user.room}`));
     
-            //const user = userJoin(socket.id, username, room);
             try{
                 const socketid = socket.id;
                 const registeruser =  new User({
@@ -48,7 +51,6 @@ io.on('connection',socket=>{
                 console.log(e);
                 res.status(400).send(e);
             }
-    
             io.to(user.room).emit('roomUsers',{
                 room: user.room,
                 users: await User.find({room:user.room})
@@ -64,12 +66,15 @@ io.on('connection',socket=>{
     });
 
      // taking the chatmessage on server side
+
      socket.on('chatMessage',async(msg)=>{
         const user = await User.findOne({socketid:socket.id});
-        io.to(user.room).emit('message',formatMessage(user.username,msg));
+        if(user)
+          io.to(user.room).emit('message',formatMessage(user.username,msg));
     })
 
     //on client disconnection
+    
     socket.on('disconnect',async()=>{
         const socketid = String(socket.id);
         const user = await User.findOne({socketid:socketid});
@@ -102,23 +107,7 @@ app.post("/user",async(req,res)=>{
     res.status(204).send();
 })
 
-app.post("/login",async(req,res)=>{
-    try{
-        const email = req.body.mail;
-        const password = req.body.passwrd;
-        console.log(email + " " + password);
-        const user = await Register.findOne({email:email});
-        console.log(user);
-        if(user.passwrd == password){
-            res.sendFile(path.join(static_path,"index.html"));
-        }else{
-            res.send("Invalid email or Password");
-        }
 
-    }catch(e){
-        console.log(e);
-        res.status(400).send("Invalid email or Password");
-    }})
 
 app.get("/register",(req,res)=>{
     res.render("register");
