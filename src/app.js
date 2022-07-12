@@ -29,7 +29,8 @@ io.on('connection',socket=>{
        try{
         console.log(email + " " + password);
         const user = await Register.findOne({email:email});
-        if(user.passwrd == password){
+        if(user && user.passwrd == password){
+            
             const user = userJoin(socket.id, username, room);
             socket.join(user.room);
     
@@ -102,13 +103,10 @@ app.get("/login",(req,res)=>{
     res.sendFile(path.join(static_path,"index.html"));
 });
 
-app.post("/user",async(req,res)=>{
-    res.status(204).send();
-})
-
 
 
 app.get("/register",(req,res)=>{
+    console.log("called me!")
     res.render("register");
 })
 
