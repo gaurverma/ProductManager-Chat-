@@ -30,7 +30,7 @@ io.on('connection',socket=>{
         console.log(email + " " + password);
         const user = await Register.findOne({email:email});
         if(user && user.passwrd == password){
-            
+
             const user = userJoin(socket.id, username, room);
             socket.join(user.room);
     
@@ -71,6 +71,14 @@ io.on('connection',socket=>{
         const socketid = String(socket.id);
         const user = await User.findOne({socketid:socketid});
         io.to(user.room).emit('message',formatMessage(user.username,msg));
+    })
+
+    //display page
+
+    socket.on('displayprompt',async(socketid)=>{
+        console.log("yes i got it");
+        const user = await User.findOne({socketid:socketid});
+        io.emit('prompt',user);
     })
 
     //on client disconnection
@@ -125,6 +133,13 @@ app.post("/register",async(req,res)=>{
         res.status(400).send(e);
     }
 })
+
+app.get('/display', (req, res) => {
+    User.find({}, function(err, users) {
+        res.render('display', {users: users});
+    })
+})
+
 
 server.listen(port,()=>{
     console.log(`server is running at port no ${port}`);
