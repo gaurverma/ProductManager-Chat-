@@ -13,13 +13,14 @@
         <thead>
           <tr>
             <th scope="col">SocketID</th>
+            <th scope="col">Email</th>
           </tr>
         </thead>
         <tbody>
             {{#each users}}
                 <tr>
                  <td scope="row" id = {{socketid}}>{{socketid}}</td>
-                 <td  style="display:none;" id = 'email'>{{email}}</td>
+                 <td  id = {{email}}>{{email}}</td>
                  <td style="display:none;" id = "username">{{username}}</td>
                  <td style="display:none;" id = "room">{{room}}</td>
                 </tr>
@@ -37,6 +38,7 @@
         document.addEventListener('click',async function(e){
         if(e.target){
             const id = e.target.id;
+            if(id){
             const parent = document.getElementById(id).parentElement;
             const collection = parent.children;
             const data = `                           Socket id: ${collection[0].innerHTML} 
@@ -44,6 +46,7 @@
                            Username: ${collection[2].innerHTML}     
                            Room:  ${collection[3].innerHTML}`
             givealert(data);
+            }
         }
        });
       </script>
